@@ -5,13 +5,33 @@ import { FormField, Loader } from '../components'
 
 const MessageForm = () => {
 	const navigate = useNavigate()
+
 	const [ form, setForm ] = useState({
 		name: '',
-		prompt: ''
+		message: ''
 	})
 	const [ sendingMessage, setSendingMessage ] = useState(false)
 	const [ loading, setLoading ] = useState(false)
-	const sendMessage = () => {}
+
+	const sendMessage = async () => {
+		try {
+			setSendingMessage(true)
+			await fetch('http://localhost:8080/api/v2/', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application.json'
+				},
+				body: JSON.stringify({ message: form.message })
+			})
+
+			const data = await response.json()
+			setForm({ ...form, message: data.message })
+		} catch (error) {
+			alert(error)
+		} finally {
+			setSendingMessage(false)
+		}
+	}
 	const handleSubmit = () => {}
 	const handleChange = (e) => {
 		setForm({ ...form, [e.target.name]: e.target.value })
@@ -33,11 +53,11 @@ const MessageForm = () => {
 						handleChange={handleChange}
 					/>
 					<FormField
-						labelName='Prompt'
+						labelName='Message'
 						type='text'
-						name='prompt'
+						name='message'
 						placeholder='Start a conversation'
-						value={form.prompt}
+						value={form.message}
 						handleChange={handleChange}
 					/>
 				</div>
